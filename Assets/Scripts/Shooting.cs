@@ -1,30 +1,26 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Shooting : MonoBehaviour
 {
-    [SerializeField] private GameObject _prefab;
-    [SerializeField] private float _speed;
-    [SerializeField] private float _spawnTime;
+    [SerializeField] private float _force;
+    [SerializeField] private float _shootingTime;
+    [SerializeField] private GameObject _bulletPrefab;
+    [SerializeField] private Transform _shootTatget;
 
-    private Transform _target;
-
-    public void Start()
+    private void Start()
     {
-        StartCoroutine(ShootingWorker());
+        StartCoroutine(_shootingWorker());
     }
 
-    private IEnumerator ShootingWorker()
+    private IEnumerator _shootingWorker()
     {
-        while (Input.GetMouseButtonDown(1))
-        {
-            Vector3 direction = (_target.position - transform.position).normalized;
-            var NewBullet = Instantiate(_prefab, transform.position + direction, Quaternion.identity);
+        Vector3 bulletDirection = (_shootTatget.position - transform.position).normalized;
+        GameObject bullet = Instantiate(_bulletPrefab, transform.position + bulletDirection, Quaternion.identity);
 
-            NewBullet.GetComponent<Rigidbody>().velocity = direction * _speed;
+        bullet.GetComponent<Rigidbody2D>().velocity = bulletDirection * _force;
 
-            yield return new WaitForSeconds(_spawnTime);
-        }
+        yield return new WaitForSeconds(_shootingTime);
+        StartCoroutine(_shootingWorker());
     }
 }
